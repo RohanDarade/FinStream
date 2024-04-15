@@ -1,6 +1,10 @@
 from flask import Flask
 from kafka import KafkaConsumer
 import threading
+#import redis
+import redis
+
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
 app = Flask(__name__)
 
@@ -21,6 +25,14 @@ def consume_messages():
         price = float(message.value.decode('utf-8'))
         symbol = message.topic.upper()
         print(f"Received: {symbol}: ${price:.2f}")
+        redis_client.set(symbol, price)
+
+        # Print the data stored in Redis
+        for key in ticker_symbols:
+            stored_price = redis_client.get(key)
+            if stored_price:
+                stored_price = float(stored_price.decode('utf-8'))
+                print(f"Symbol: {key}, Price: {stored_price:.2f}")
 
 def start_consumer():
     consumer_thread = threading.Thread(target=consume_messages)
