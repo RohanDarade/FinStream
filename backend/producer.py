@@ -42,4 +42,4 @@ while True:
         producers[symbol].send(topic, str(price).encode('utf-8'))
         print(f"Sent: {symbol}: ${price:.2f} to topic: {topic} count : {count}")
         count += 1
-    time.sleep(2)  # Sleep for 1 second
+    time.sleep(3)  # Sleep for 1 second
