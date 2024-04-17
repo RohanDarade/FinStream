@@ -2,16 +2,13 @@ import random
 import time
 from kafka import KafkaProducer
 
-
-
 ticker_symbols = [
-    "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "FB", "NVDA", "PYPL", "ADBE", "INTC",
+    "AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "FB", "NVDA", "PYPL", "ADBE", "INTC"
     "CMCSA", "NFLX", "CSCO", "PEP", "ABNB", "QCOM", "TMUS", "AVGO", "TXN", "CHTR",
     "AMD", "SBUX", "AMGN", "COST", "MCD", "GILD", "BKNG", "ADP", "MDLZ", "INTU",
     "ISRG", "ZM", "VRTX", "REGN", "ATVI", "WBA", "MU", "CSX", "ILMN", "ADI",
     "IDXX", "DXCM", "MRNA", "KLAC", "LULU", "EBAY", "EA", "NTES", "EXC"
 ]
-
 
 # Rest of the code...
 default_prices = {symbol: round(random.uniform(50, 2000), 2) for symbol in ticker_symbols}
@@ -24,7 +21,7 @@ broker_address = 'localhost:9092'
 
 # Create Kafka producer for each ticker symbol
 producers = {symbol: KafkaProducer(bootstrap_servers=broker_address) for symbol in ticker_symbols}
-count = 0
+
 # Function to update prices
 def update_prices():
     global prices
@@ -40,6 +37,5 @@ while True:
         # Push the new price to the corresponding topic
         topic = symbol.lower()
         producers[symbol].send(topic, str(price).encode('utf-8'))
-        print(f"Sent: {symbol}: ${price:.2f} to topic: {topic} count : {count}")
-        count += 1
-    time.sleep(3)  # Sleep for 1 second
+        print(f"Sent: {symbol}: ${price:.2f} to topic: {topic} ")
+    time.sleep(0.1)  # Sleep for 1 second
