@@ -2,16 +2,17 @@ from flask import Flask, Response
 from kafka import KafkaConsumer
 import threading
 import redis
+import time
 import json
 from flask_cors import CORS
-
 
 redis_client = redis.Redis(host='localhost', port=6379, db=0)
 
 app = Flask(__name__)
+
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-count = 0
+
 broker_address = 'localhost:9092'
 ticker_symbols = ["AAPL", "MSFT", "AMZN", "GOOGL", "TSLA", "FB", "NVDA", "PYPL", "ADBE", "INTC",
                   "CMCSA", "NFLX", "CSCO", "PEP", "ABNB", "QCOM", "TMUS", "AVGO", "TXN", "CHTR",
@@ -23,7 +24,6 @@ consumer = KafkaConsumer(bootstrap_servers=broker_address, group_id='flask-group
 
 ticker_symbols_lower = [symbol.lower() for symbol in ticker_symbols]
 consumer.subscribe(topics=ticker_symbols_lower)
-
 
 def consume_messages():
     for message in consumer:
@@ -56,6 +56,8 @@ def prices():
                 if data != last_data:
                     last_data = data
                     yield f"data: {json.dumps(data)}\n\n"
+                time.sleep(1)  # Add 1 second delay to avoid the frontend to consume too fast
+                
         except GeneratorExit:
             clients.remove(client)
     return Response(generate(), mimetype='text/event-stream')
@@ -78,4 +80,3 @@ if not app.debug or not app.testing:  # Avoid starting consumer in debug or test
 
 if __name__ == '__main__':
     app.run(debug=True)
-

@@ -38,4 +38,4 @@ while True:
         topic = symbol.lower()
         producers[symbol].send(topic, str(price).encode('utf-8'))
         print(f"Sent: {symbol}: ${price:.2f} to topic: {topic} ")
-    time.sleep(0.1)  # Sleep for 1 second
+    # time.sleep(5)  # Uncomment this line to slow down the updates
